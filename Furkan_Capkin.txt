@@ -1,0 +1,138 @@
+//Furkan Çapkın
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+//Stack ADT type definations
+typedef struct node{
+    void * dataPtr;
+    struct node * nextstep;
+}
+STACK_NODE;
+
+typedef struct{
+    int count;
+    STACK_NODE* up;
+}
+STACK;
+
+STACK* createStack(void){
+    STACK* stack;//local defination
+    
+    //statements
+    stack = (STACK*)malloc(sizeof(STACK));
+    stack -> count = 0;
+    stack -> up = NULL;
+    return stack;
+}
+
+bool pushStack(STACK * stack, void * dataInPtr){
+    STACK_NODE* newPtr;//Local definitions
+    
+    //statements
+    newPtr = (STACK_NODE*)malloc(sizeof(STACK_NODE));
+    if(!newPtr){
+        return false;
+    }
+    newPtr->dataPtr = dataInPtr;
+    newPtr->nextstep = stack->up;
+    stack->up = newPtr;
+    (stack->count)++;
+
+    return true;
+}
+
+void* popStack(STACK * stack){
+    void* dataOutPtr;//Local Definations
+    STACK_NODE* temp;
+
+    //statements
+    if(stack->count == 0){
+        dataOutPtr = NULL;
+    }
+    else{
+        temp = stack->up;
+        dataOutPtr=stack->up->dataPtr;
+        stack->up=stack->up->nextstep;
+        free(temp);
+        (stack->count)--;
+    }
+    return dataOutPtr;
+}
+
+bool emptyStack(STACK * stack){
+    if(stack->count == 0){
+        return true;
+    }
+    return false;
+}
+
+bool Compailer(char u,char c){
+    /*number value of left parenthesis on asci system = 40
+      number value of right parenthesis on asci system = 41
+      number value of left curly parenthesis on asci systemcurly parenthesis = 123
+      number value of right curly parenthesis on asci systemcurly parenthesis = 125*/
+    if(u == 40 && c == 41 || u == 123 && c == 125){
+        return false;
+    }
+    return true;
+}
+
+bool Balanced(char X[], size_t N){
+    int i=0;
+    char a='a';
+    STACK* stack;
+    stack = createStack();
+    void* dataOutPtr;
+
+    while(i!=N){
+    a=X[i];
+        if(a==40 || a==41 || a==123 || a==125){
+            if(a == '{' || a == '('){
+                pushStack(stack,a);
+            }else{
+                if(a == '}' || a == ')'){
+                        if(emptyStack(stack)){
+                            return false;
+                        }else{
+                               dataOutPtr = popStack(stack);
+                               if(Compailer(dataOutPtr,a)){
+                                   return false;
+                            }
+                           }
+                }
+            }
+        }
+        i++;
+    }
+    if(emptyStack(stack)){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+int main(){
+    char X[50];
+    bool bTrue=true;
+
+    printf("Enter characters to check: ");
+    gets(X);
+    
+    if ( X[0] == NULL){//Kullanıcının değer girip girmediğine bakıyoruz.
+        while (X[0] == NULL){
+            printf("\nPlease enter the characters!!!\n\n");
+            printf("Enter characters to check:");
+            gets(X);
+        }
+    }
+    bTrue = Balanced(X,strlen(X));
+    if(bTrue){
+    printf("\nTRUE\n");
+    }else{
+        printf("\nFALSE\n");
+    }
+    return 0;
+    //Furkan Çapkın
+}
